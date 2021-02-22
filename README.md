@@ -1,8 +1,11 @@
 # guitar_pedal
 
+Uses Nokia 5110 library from:  
+<https://github.com/Zeldax64/Nokia-LCD5110-HAL/tree/master/src>  
+
 Work in progress 
 
-Overview
+Overview  
 1. [ ]Sample audio into STM32F4
 2. [ ]Apply effects
 3. [ ]Output graphic representation of audio and EQ to Nokia 5110 LCD
