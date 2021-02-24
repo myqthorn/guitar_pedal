@@ -164,15 +164,15 @@ void Error_Handler(void);
 #define MEMS_INT2_GPIO_Port GPIOE
 
 #define LCD_RST_PORT GPIOB
-#define LCD_RST_PIN 11
+#define LCD_RST_PIN 1<<11
 #define LCD_CE_PORT GPIOB
-#define LCD_CE_PIN 12
+#define LCD_CE_PIN 1<<12
 #define LCD_DC_PORT GPIOB
-#define LCD_DC_PIN 13
+#define LCD_DC_PIN 1<<14
 #define LCD_DIN_PORT GPIOB
-#define LCD_DIN_PIN 14
+#define LCD_DIN_PIN 1<<15
 #define LCD_CLK_PORT GPIOB
-#define LCD_CLK_PIN 15
+#define LCD_CLK_PIN 1<<13
 
 
 #ifdef __cplusplus

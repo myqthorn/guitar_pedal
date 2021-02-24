@@ -18,6 +18,8 @@
   */
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
+#include <math.h>
+#include <arm_math.h>
 #include "main.h"
 #include "usb_host.h"
 
@@ -43,7 +45,9 @@ static void MX_SPI1_Init(void);
 void MX_USB_HOST_Process(void);
 
 /* USER CODE BEGIN PFP */
-
+void TestGraphicEq(void);
+void GraphicEq(uint16_t *data);
+void DrawAudio(uint16_t *data);
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -65,9 +69,9 @@ int main(void)
     HAL_Init();
 
     BSP_LED_Init(LED3);
-    BSP_LED_Init(LED4);
-    BSP_LED_Init(LED5);
-    BSP_LED_Init(LED6);
+//    BSP_LED_Init(LED4);
+//    BSP_LED_Init(LED5);
+//    BSP_LED_Init(LED6);
 
     /* Configure the system clock */
     SystemClock_Config();
@@ -85,9 +89,9 @@ int main(void)
     HAL_UART_Init(&UartHandle);
     /* Initialize all configured peripherals */
     MX_GPIO_Init();
-    MX_I2C1_Init();
-    MX_I2S3_Init();
-    MX_SPI1_Init();
+//    MX_I2C1_Init();
+//    MX_I2S3_Init();
+//    MX_SPI1_Init();
 //    MX_USB_HOST_Init();
 
     HAL_UART_Transmit_DMA(&UartHandle, (uint8_t*)"Hello there\n", sizeof("Hello there\n"));
@@ -101,12 +105,22 @@ int main(void)
     LCD_setCLK(LCD_CLK_PORT, LCD_CLK_PIN);
     LCD_init();
 
-    LCD_print("Audio Effects",2,2);
+//    LCD_print("Edyn is my",0,0);
+//    LCD_print("Favorite",0,1);
+//    LCD_print("Oldest",0,2);
+//    LCD_print("Child",0,3);
+
+
 
     /* Infinite loop */
     /* USER CODE BEGIN WHILE */
     while (1)
     {
+        TestGraphicEq();
+//        LCD_print("Audio Effects",2,2);
+
+//        HAL_GPIO_TogglePin(GPIOD , 1<<13);
+//        BSP_LED_Toggle(LED3);
     /* USER CODE END WHILE */
 //    MX_USB_HOST_Process();
 
@@ -289,57 +303,60 @@ static void MX_GPIO_Init(void)
     __HAL_RCC_GPIOB_CLK_ENABLE();
     __HAL_RCC_GPIOD_CLK_ENABLE();
 
-    /*Configure GPIO pin Output Level */
-    HAL_GPIO_WritePin(CS_I2C_SPI_GPIO_Port, CS_I2C_SPI_Pin, GPIO_PIN_RESET);
-
-    /*Configure GPIO pin Output Level */
-    HAL_GPIO_WritePin(OTG_FS_PowerSwitchOn_GPIO_Port, OTG_FS_PowerSwitchOn_Pin, GPIO_PIN_SET);
+//    /*Configure GPIO pin Output Level */
+//    HAL_GPIO_WritePin(CS_I2C_SPI_GPIO_Port, CS_I2C_SPI_Pin, GPIO_PIN_RESET);
+//
+//    /*Configure GPIO pin Output Level */
+//    HAL_GPIO_WritePin(OTG_FS_PowerSwitchOn_GPIO_Port, OTG_FS_PowerSwitchOn_Pin, GPIO_PIN_SET);
 
     /*Configure GPIO pin Output Level */
     HAL_GPIO_WritePin(GPIOD, LD4_Pin|LD3_Pin|LD5_Pin|LD6_Pin
                           |Audio_RST_Pin, GPIO_PIN_RESET);
 
-    /*Configure GPIO pin : CS_I2C_SPI_Pin */
-    GPIO_InitStruct.Pin = CS_I2C_SPI_Pin;
-    GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
-    GPIO_InitStruct.Pull = GPIO_NOPULL;
-    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-    HAL_GPIO_Init(CS_I2C_SPI_GPIO_Port, &GPIO_InitStruct);
+    HAL_GPIO_WritePin(GPIOB, LCD_RST_PIN|LCD_CE_PIN|LCD_DC_PIN|LCD_DIN_PIN
+                          |LCD_CLK_PIN, GPIO_PIN_RESET);
 
-    /*Configure GPIO pin : OTG_FS_PowerSwitchOn_Pin */
-    GPIO_InitStruct.Pin = OTG_FS_PowerSwitchOn_Pin;
-    GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
-    GPIO_InitStruct.Pull = GPIO_NOPULL;
-    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-    HAL_GPIO_Init(OTG_FS_PowerSwitchOn_GPIO_Port, &GPIO_InitStruct);
-
-    /*Configure GPIO pin : PDM_OUT_Pin */
-    GPIO_InitStruct.Pin = PDM_OUT_Pin;
-    GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
-    GPIO_InitStruct.Pull = GPIO_NOPULL;
-    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-    GPIO_InitStruct.Alternate = GPIO_AF5_SPI2;
-    HAL_GPIO_Init(PDM_OUT_GPIO_Port, &GPIO_InitStruct);
-
-    /*Configure GPIO pin : B1_Pin */
-    GPIO_InitStruct.Pin = B1_Pin;
-    GPIO_InitStruct.Mode = GPIO_MODE_EVT_RISING;
-    GPIO_InitStruct.Pull = GPIO_NOPULL;
-    HAL_GPIO_Init(B1_GPIO_Port, &GPIO_InitStruct);
-
-    /*Configure GPIO pin : BOOT1_Pin */
-    GPIO_InitStruct.Pin = BOOT1_Pin;
-    GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
-    GPIO_InitStruct.Pull = GPIO_NOPULL;
-    HAL_GPIO_Init(BOOT1_GPIO_Port, &GPIO_InitStruct);
-
-    /*Configure GPIO pin : CLK_IN_Pin */
-    GPIO_InitStruct.Pin = CLK_IN_Pin;
-    GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
-    GPIO_InitStruct.Pull = GPIO_NOPULL;
-    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-    GPIO_InitStruct.Alternate = GPIO_AF5_SPI2;
-    HAL_GPIO_Init(CLK_IN_GPIO_Port, &GPIO_InitStruct);
+//    /*Configure GPIO pin : CS_I2C_SPI_Pin */
+//    GPIO_InitStruct.Pin = CS_I2C_SPI_Pin;
+//    GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+//    GPIO_InitStruct.Pull = GPIO_NOPULL;
+//    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+//    HAL_GPIO_Init(CS_I2C_SPI_GPIO_Port, &GPIO_InitStruct);
+//
+//    /*Configure GPIO pin : OTG_FS_PowerSwitchOn_Pin */
+//    GPIO_InitStruct.Pin = OTG_FS_PowerSwitchOn_Pin;
+//    GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+//    GPIO_InitStruct.Pull = GPIO_NOPULL;
+//    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+//    HAL_GPIO_Init(OTG_FS_PowerSwitchOn_GPIO_Port, &GPIO_InitStruct);
+//
+//    /*Configure GPIO pin : PDM_OUT_Pin */
+//    GPIO_InitStruct.Pin = PDM_OUT_Pin;
+//    GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
+//    GPIO_InitStruct.Pull = GPIO_NOPULL;
+//    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+//    GPIO_InitStruct.Alternate = GPIO_AF5_SPI2;
+//    HAL_GPIO_Init(PDM_OUT_GPIO_Port, &GPIO_InitStruct);
+//
+//    /*Configure GPIO pin : B1_Pin */
+//    GPIO_InitStruct.Pin = B1_Pin;
+//    GPIO_InitStruct.Mode = GPIO_MODE_EVT_RISING;
+//    GPIO_InitStruct.Pull = GPIO_NOPULL;
+//    HAL_GPIO_Init(B1_GPIO_Port, &GPIO_InitStruct);
+//
+//    /*Configure GPIO pin : BOOT1_Pin */
+//    GPIO_InitStruct.Pin = BOOT1_Pin;
+//    GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+//    GPIO_InitStruct.Pull = GPIO_NOPULL;
+//    HAL_GPIO_Init(BOOT1_GPIO_Port, &GPIO_InitStruct);
+//
+//    /*Configure GPIO pin : CLK_IN_Pin */
+//    GPIO_InitStruct.Pin = CLK_IN_Pin;
+//    GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
+//    GPIO_InitStruct.Pull = GPIO_NOPULL;
+//    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+//    GPIO_InitStruct.Alternate = GPIO_AF5_SPI2;
+//    HAL_GPIO_Init(CLK_IN_GPIO_Port, &GPIO_InitStruct);
 
     /*Configure GPIO pins : LD4_Pin LD3_Pin LD5_Pin LD6_Pin
                            Audio_RST_Pin */
@@ -350,50 +367,55 @@ static void MX_GPIO_Init(void)
     GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
     HAL_GPIO_Init(GPIOD, &GPIO_InitStruct);
 
-    /*Configure GPIO pin : OTG_FS_OverCurrent_Pin */
-    GPIO_InitStruct.Pin = OTG_FS_OverCurrent_Pin;
-    GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
-    GPIO_InitStruct.Pull = GPIO_NOPULL;
-    HAL_GPIO_Init(OTG_FS_OverCurrent_GPIO_Port, &GPIO_InitStruct);
-
-    /*Configure GPIO pin : MEMS_INT2_Pin */
-    GPIO_InitStruct.Pin = MEMS_INT2_Pin;
-    GPIO_InitStruct.Mode = GPIO_MODE_EVT_RISING;
-    GPIO_InitStruct.Pull = GPIO_NOPULL;
-    HAL_GPIO_Init(MEMS_INT2_GPIO_Port, &GPIO_InitStruct);
+//    /*Configure GPIO pin : OTG_FS_OverCurrent_Pin */
+//    GPIO_InitStruct.Pin = OTG_FS_OverCurrent_Pin;
+//    GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+//    GPIO_InitStruct.Pull = GPIO_NOPULL;
+//    HAL_GPIO_Init(OTG_FS_OverCurrent_GPIO_Port, &GPIO_InitStruct);
+//
+//    /*Configure GPIO pin : MEMS_INT2_Pin */
+//    GPIO_InitStruct.Pin = MEMS_INT2_Pin;
+//    GPIO_InitStruct.Mode = GPIO_MODE_EVT_RISING;
+//    GPIO_InitStruct.Pull = GPIO_NOPULL;
+//    HAL_GPIO_Init(MEMS_INT2_GPIO_Port, &GPIO_InitStruct);
 
 
     //Nokia 5110 LCD pins
     GPIO_InitStruct.Pin = LCD_RST_PIN;
     GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
     GPIO_InitStruct.Pull = GPIO_NOPULL;
-    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+    GPIO_InitStruct.Speed = GPIO_SPEED_FAST;
     HAL_GPIO_Init(LCD_RST_PORT, &GPIO_InitStruct);
 
     GPIO_InitStruct.Pin = LCD_CE_PIN;
     GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
     GPIO_InitStruct.Pull = GPIO_NOPULL;
-    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+    GPIO_InitStruct.Speed = GPIO_SPEED_FAST;
     HAL_GPIO_Init(LCD_CE_PORT, &GPIO_InitStruct);
 
     GPIO_InitStruct.Pin = LCD_DC_PIN;
     GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
     GPIO_InitStruct.Pull = GPIO_NOPULL;
-    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+    GPIO_InitStruct.Speed = GPIO_SPEED_FAST;
     HAL_GPIO_Init(LCD_DC_PORT, &GPIO_InitStruct);
 
     GPIO_InitStruct.Pin = LCD_DIN_PIN;
     GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
     GPIO_InitStruct.Pull = GPIO_NOPULL;
-    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+    GPIO_InitStruct.Speed = GPIO_SPEED_FAST;
     HAL_GPIO_Init(LCD_DIN_PORT, &GPIO_InitStruct);
 
     GPIO_InitStruct.Pin = LCD_CLK_PIN;
     GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
-    GPIO_InitStruct.Pull = GPIO_NOPULL;
-    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+    GPIO_InitStruct.Pull = GPIO_PULLUP;
+    GPIO_InitStruct.Speed = GPIO_SPEED_FAST;
     HAL_GPIO_Init(LCD_CLK_PORT, &GPIO_InitStruct);
 
+    GPIO_InitStruct.Pin = 13;
+    GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+    GPIO_InitStruct.Pull = GPIO_PULLUP;
+    GPIO_InitStruct.Speed = GPIO_SPEED_FAST;
+    HAL_GPIO_Init(GPIOD, &GPIO_InitStruct);
 }
 
 
@@ -412,6 +434,53 @@ void Error_Handler(void)
   /* USER CODE END Error_Handler_Debug */
 }
 
+float32_t Input[128];
+float32_t Output[64];
+
+void TestGraphicEq(void)
+{
+    uint16_t i;
+    uint16_t data[128];
+    static uint16_t z = 0;
+    arm_cfft_radix4_instance_f32 S;
+
+    for (i = 0; i < 64; i++)
+    {
+        data[i] = (uint16_t)(12.0 +  (12.0*sin((double)(z+i)/10.0)));
+//        data[i+1] = 0;
+    }
+
+//    arm_cfft_radix4_init_f32(&S, 64, 0, 1);
+//    arm_cfft_radix4_f32(&S, data);
+//    arm_cmplx_mag_f32(data, Output, 64);
+
+    LCD_clrScr();
+    GraphicEq(data);
+    DrawAudio(data);
+    LCD_refreshScr();
+    z++;
+}
+
+
+void GraphicEq(uint16_t *data)
+{
+    uint16_t x;
+
+    for (x = 0;x < 164; x++)
+    {
+        LCD_drawVLine(x, 24-data[x], data[x]);
+    }
+
+}
+
+void DrawAudio(uint16_t *data)
+{
+    uint16_t x;
+    for (x = 0; x < 64; x++)
+    {
+        LCD_setPixel(x, 47-data[x], 1);
+    }
+}
 #ifdef  USE_FULL_ASSERT
 /**
   * @brief  Reports the name of the source file and the source line number
